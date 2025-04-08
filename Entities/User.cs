@@ -10,10 +10,11 @@
         public string City { get; set; }
 
         public int? CommitteeId { get; set; }
-        public Committee? Committee { get; set; }
 
-        public ICollection<Role>? Roles { get; set; } = new List<Role>();
-        public ICollection<Tasks>? Tasks { get; set; } = new List<Tasks>();
+        
+        public ICollection<Tasks>? HeadTasks { get; set; } = new List<Tasks>();
+        public ICollection<Users_Tasks>? Users_Tasks { get; set; } = new List<Users_Tasks>();
+
 
 
 

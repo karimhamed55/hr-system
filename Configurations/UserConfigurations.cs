@@ -11,13 +11,7 @@ namespace IEEE.Configurations
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
-
-            builder.HasMany(u => u.Roles)
-                .WithMany(r => r.Users);
-
-            builder.HasOne(u => u.Committee)
-                .WithMany(c => c.Users)
-                .HasForeignKey(u => u.CommitteeId);
+    
         }
     }
 }

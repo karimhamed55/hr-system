@@ -12,16 +12,10 @@ namespace IEEE.Configurations
 
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-            builder.HasMany(t => t.Users)
-                .WithMany(u => u.Tasks);
 
             builder.HasOne(t => t.Head)
-                .WithMany(h => h.Tasks)
+                .WithMany(h => h.HeadTasks)
                 .HasForeignKey(t => t.HeadId);
-
-            builder.HasOne(t=>t.Committee)
-                .WithMany(c=>c.Tasks)
-                .HasForeignKey(t=>t.CommitteeId);
 
 
 
