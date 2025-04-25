@@ -10,7 +10,7 @@ namespace IEEE.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "HighBoard")] 
+  //  [Authorize(Roles = "HighBoard")] 
     public class UsersController : ControllerBase
     {
         private readonly Microsoft.AspNetCore.Identity.UserManager<User> _userManager;
@@ -29,10 +29,17 @@ namespace IEEE.Controllers
                 {
                     u.Id,
                     u.UserName,
-                    u.Name,
+                    u.FName,
+                    u.MName,
+                    u.LName,
+                    u.Year,
+                    u.Sex,
+                    u.Goverment,
+                    u.Phone,
                     u.Email,
                     u.Faculty,
                     u.Role ,
+                    u.Committee,
                     u.IsActive
                 })
                 .ToList();
@@ -47,10 +54,20 @@ namespace IEEE.Controllers
             var user = new User
             {
                 UserName = dto.UserName,
-                Name = dto.Name,
+                FName = dto.FName,
+                MName = dto.FName,
+                LName = dto.FName,
+                Year = dto.Year,
+                Sex = dto.Sex,
+                Goverment = dto.Goverment,
+                Phone = dto.Phone,
+                Password = dto.Password,
                 Email = dto.Email,
                 Faculty = dto.Faculty,
-                IsActive = false // أو false حسب الحالة
+                City    =dto.City,
+                IsActive = false , 
+                Role = dto.Role , 
+                Committee = dto.Committee
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -69,7 +86,14 @@ namespace IEEE.Controllers
             if (user == null)
                 return NotFound("User not found");
 
-            user.Name = dto.Name;
+            user.FName = dto.FName;
+            user.MName = dto.MName;
+            user.LName = dto.LName;
+            user.Sex  = dto.Sex;
+            user.Committee = dto.Committee;
+            user.Phone = dto.Phone;
+            user.Goverment = dto.Goverment;
+            user.Year = dto.Year; 
             user.UserName = dto.UserName;
             user.Email = dto.Email;
             user.Faculty = dto.Faculty;

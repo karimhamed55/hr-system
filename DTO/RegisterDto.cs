@@ -7,11 +7,24 @@ namespace IEEE.DTO
 
         [Required]
         [StringLength(50, MinimumLength = 3)]
+        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "UserName can only contain letters and digits.")]
         public string UserName { get; set; }
+
+        
 
 
         [Required]
-        public string Name { get; set; }
+        public string FName { get; set; }
+
+
+        [Required]
+        public string MName { get; set; }
+
+
+
+        [Required]
+        public string LName { get; set; }
+
 
 
         [Required]
@@ -25,11 +38,39 @@ namespace IEEE.DTO
         public string Email { get; set; }
 
 
+        public string City { get; set; }
+
+
         [Required]
         public string Faculty { get; set; }
 
 
         [Required]
-        public string Role { get; set; } 
+        public string Role { get; set; }
+
+
+        [Required]
+        public string Year { get; set; }
+
+
+
+        [Required]
+        public string Goverment { get; set; }
+
+
+        [Required]
+        public string Phone { get; set; }
+
+
+
+        [Required]
+        public string Sex { get; set; }
+
+
+        [Required]
+        public string Committee { get; set; }
+
+
+       
     }
 }

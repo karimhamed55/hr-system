@@ -15,10 +15,12 @@ namespace IEEE.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<User> userManager;
+        private readonly IConfiguration config;
 
-        public AccountController(UserManager<User> UserManager)
+        public AccountController(UserManager<User> UserManager , IConfiguration config)
         {
             userManager = UserManager;
+            this.config = config;
         }
 
 
@@ -32,16 +34,22 @@ namespace IEEE.Controllers
 
                 User user = new User();
                 user.UserName = UserFromRequest.UserName;
-                user.Name = UserFromRequest.Name;
+                user.FName = UserFromRequest.FName;
+                user.MName = UserFromRequest.MName;
+                user.LName = UserFromRequest.LName;
                 user.Faculty = UserFromRequest.Faculty;
                 user.Email = UserFromRequest.Email;
+                user.City  = UserFromRequest.City;
                 user.Role = UserFromRequest.Role;
+                user.Password = UserFromRequest.Password;
+                user.Committee = UserFromRequest.Committee;
+                user.Phone = UserFromRequest.Phone;
+                user.Sex = UserFromRequest.Sex;
+                user.Goverment = UserFromRequest.Goverment;
+                user.Year        = UserFromRequest.Year;
                 user.IsActive = false;
-
-
-
-
                 
+
                 IdentityResult result = await userManager.CreateAsync(user, UserFromRequest.Password);
 
                 if (result.Succeeded)
@@ -82,7 +90,7 @@ namespace IEEE.Controllers
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.NameIdentifier, userfromdb.Id.ToString()),
-                    new Claim(ClaimTypes.Name, userfromdb.UserName)
+                 //   new Claim(ClaimTypes.Name, userfromdb.UserName)
                 };
 
                         var UserRoles = await userManager.GetRolesAsync(userfromdb);
@@ -92,8 +100,8 @@ namespace IEEE.Controllers
                         }
 
                         JwtSecurityToken mytoken = new JwtSecurityToken(
-                            issuer: "http://localhost:5078/",
-                            audience: "ieeeweb",
+                            issuer: config["Jwt:IssuerIP"] , 
+                            audience: config["Jwt:AudienceIP"],
                             expires: DateTime.Now.AddHours(1),
                             claims: UserClaim,
                             signingCredentials: new SigningCredentials(

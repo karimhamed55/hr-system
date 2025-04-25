@@ -20,14 +20,14 @@ namespace IEEE.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Committee>>> GetCommittees()
         {
-            return await _context.committees.ToListAsync();
+            return await _context.Committees.ToListAsync();
         }
 
         
         [HttpGet("{id}")]
         public async Task<ActionResult<Committee>> GetCommittee(int id)
         {
-            var committee = await _context.committees.FindAsync(id);
+            var committee = await _context.Committees.FindAsync(id);
 
             if (committee == null)
             {
@@ -40,7 +40,7 @@ namespace IEEE.Controllers
         [HttpPost]
         public async Task<ActionResult<Committee>> PostCommittee(Committee committee)
         {
-            _context.committees.Add(committee);
+            _context.Committees.Add(committee);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetCommittee), new { id = committee.Id }, committee);
@@ -79,13 +79,13 @@ namespace IEEE.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommittee(int id)
         {
-            var committee = await _context.committees.FindAsync(id);
+            var committee = await _context.Committees.FindAsync(id);
             if (committee == null)
             {
                 return NotFound();
             }
 
-            _context.committees.Remove(committee);
+            _context.Committees.Remove(committee);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -93,7 +93,7 @@ namespace IEEE.Controllers
 
         private bool CommitteeExists(int id)
         {
-            return _context.committees.Any(e => e.Id == id);
+            return _context.Committees.Any(e => e.Id == id);
         }
     }
 }
