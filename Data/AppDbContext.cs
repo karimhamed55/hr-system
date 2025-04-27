@@ -18,9 +18,6 @@ namespace IEEE.Data
             modelBuilder.ApplyConfiguration(new Users_TasksConfigurations());
             modelBuilder.ApplyConfiguration(new MeetingConfig());
 
-
-
-
         }
 
         public DbSet<User> Users { get; set; }
