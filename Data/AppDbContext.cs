@@ -22,13 +22,11 @@ namespace IEEE.Data
             modelBuilder.ApplyConfiguration(new CommitteeConfig());
 
 
-
         }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Tasks> Tasks { get; set; }
         public DbSet<Users_Tasks> Users_Tasks { get; set; }
-        public DbSet<Role> Roles { get; set; }
         public DbSet<Committee> Committees { get; set; }
         public DbSet<Meeting> Meetings { get; set; }
     }

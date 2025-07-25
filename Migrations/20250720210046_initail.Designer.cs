@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IEEE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250504232751_fixCascadePath")]
-    partial class fixCascadePath
+    [Migration("20250720210046_initail")]
+    partial class initail
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace IEEE.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("HeadId")
+                    b.Property<int?>("HeadId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -123,7 +123,7 @@ namespace IEEE.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CommitteeId")
+                    b.Property<int>("CommitteeId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -159,10 +159,6 @@ namespace IEEE.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -388,9 +384,7 @@ namespace IEEE.Migrations
                 {
                     b.HasOne("IEEE.Entities.User", "Head")
                         .WithMany("HeadCommittees")
-                        .HasForeignKey("HeadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HeadId");
 
                     b.Navigation("Head");
                 });
@@ -437,7 +431,9 @@ namespace IEEE.Migrations
                 {
                     b.HasOne("IEEE.Entities.Committee", "Committee")
                         .WithMany("Users")
-                        .HasForeignKey("CommitteeId");
+                        .HasForeignKey("CommitteeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Committee");
                 });

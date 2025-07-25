@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace IEEE.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class initail : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -104,11 +104,10 @@ namespace IEEE.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CommitteeId = table.Column<int>(type: "int", nullable: true),
+                    CommitteeId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -153,7 +152,7 @@ namespace IEEE.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HeadId = table.Column<int>(type: "int", nullable: false)
+                    HeadId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -162,8 +161,7 @@ namespace IEEE.Migrations
                         name: "FK_Committees_AspNetUsers_HeadId",
                         column: x => x.HeadId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -191,7 +189,8 @@ namespace IEEE.Migrations
                         name: "FK_Meetings_Committees_CommitteeId",
                         column: x => x.CommitteeId,
                         principalTable: "Committees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -218,7 +217,8 @@ namespace IEEE.Migrations
                         name: "FK_Tasks_Committees_CommitteeId",
                         column: x => x.CommitteeId,
                         principalTable: "Committees",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -378,8 +378,10 @@ namespace IEEE.Migrations
                 table: "AspNetUsers",
                 column: "CommitteeId",
                 principalTable: "Committees",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.NoAction);
         }
+        
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -25,6 +25,5 @@ namespace IEEE.Entities
         public ICollection<Meeting>? Meetings { get; set; } = new List<Meeting>();
 
 
-
     }
 }

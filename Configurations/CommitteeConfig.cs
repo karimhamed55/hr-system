@@ -10,6 +10,7 @@ namespace IEEE.Configurations
         public void Configure(EntityTypeBuilder<Committee> builder)
         {
 
+
             builder.HasOne(c => c.Head)
                 .WithMany(h => h.HeadCommittees)
                 .HasForeignKey(c => c.HeadId);

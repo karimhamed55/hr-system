@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using IEEE.Data;
 using IEEE.Entities;
+using IEEE.DTO.CommitteeDto;
+using IEEE.DTO.MeetingsDto;
 
 namespace IEEE.Controllers
 {
@@ -18,14 +20,22 @@ namespace IEEE.Controllers
 
        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Committee>>> GetCommittees()
+        public async Task<ActionResult<IEnumerable<CommitteeGetDto>>> GetCommittees()
         {
-            return await _context.Committees.ToListAsync();
+            var committees = await _context.Committees.ToListAsync();
+
+            var committeesDto = committees.Select(c => new CommitteeGetDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                HeadId = c.HeadId ?? 0
+            });
+            return Ok(committeesDto);
         }
 
         
         [HttpGet("{id}")]
-        public async Task<ActionResult<Committee>> GetCommittee(int id)
+        public async Task<ActionResult<CommitteeGetDto>> GetCommittee(int id)
         {
             var committee = await _context.Committees.FindAsync(id);
 
@@ -33,45 +43,48 @@ namespace IEEE.Controllers
             {
                 return NotFound();
             }
+            var committeeDto = new CommitteeGetDto
+            {
+                Id = committee.Id,
+                Name = committee.Name,
+                HeadId = committee.HeadId ?? 0
 
-            return committee;
+            };
+
+            return Ok(committeeDto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Committee>> PostCommittee(Committee committee)
+        public async Task<ActionResult> CreateCommittee(CommitteeCreateDto committeeDto)
         {
-            _context.Committees.Add(committee);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var committee = new Committee
+            {
+                Name = committeeDto.Name,
+                HeadId = committeeDto.HeadId ?? null,
+            };
+            await _context.Committees.AddAsync(committee);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetCommittee), new { id = committee.Id }, committee);
+            return Created();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCommittee(int id, Committee committee)
+        public async Task<IActionResult> PutCommittee(int id,CommitteeUpdateDto committeeUpdateDto)
         {
-            if (id != committee.Id)
+            var committee = await _context.Committees.FindAsync(id);
+            if(committee == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+            committee.Name = committeeUpdateDto.Name;
+            committee.HeadId = committeeUpdateDto.HeadId ?? committee.HeadId;
 
-            _context.Entry(committee).State = EntityState.Modified;
-
-            try
-            {
+      
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommitteeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+       
             return NoContent();
         }
 
@@ -91,9 +104,6 @@ namespace IEEE.Controllers
             return NoContent();
         }
 
-        private bool CommitteeExists(int id)
-        {
-            return _context.Committees.Any(e => e.Id == id);
-        }
+
     }
 }
