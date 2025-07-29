@@ -32,11 +32,9 @@ namespace IEEE.Entities
         public ICollection<Meeting>? Meetings { get; set; } = new List<Meeting>();
         public ICollection<Committee> Committees { get; set; } = new List<Committee>();
 
-
-
-
-
-
+        public ICollection<Committee> HeadCommittees { get; set; } = new List<Committee>();
+        
+        public ICollection<Meeting> HeadMeetings { get; set; } = new List<Meeting>();
 
 
 

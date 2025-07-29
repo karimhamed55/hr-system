@@ -22,6 +22,21 @@ namespace IEEE.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CommitteeUser", b =>
+                {
+                    b.Property<int>("CommitteesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CommitteesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("CommitteeUser");
+                });
+
             modelBuilder.Entity("IEEE.Entities.Committee", b =>
                 {
                     b.Property<int>("Id")
@@ -120,7 +135,18 @@ namespace IEEE.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("CommitteeId")
+                    b.Property<DateTime>("BirthOfDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Committee")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CommitteeId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -139,6 +165,17 @@ namespace IEEE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Faculty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Goverment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -149,6 +186,10 @@ namespace IEEE.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("MName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -157,7 +198,15 @@ namespace IEEE.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -166,7 +215,15 @@ namespace IEEE.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sex")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -176,9 +233,11 @@ namespace IEEE.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("CommitteeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -221,11 +280,6 @@ namespace IEEE.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -242,10 +296,6 @@ namespace IEEE.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityRole<int>");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -366,15 +416,19 @@ namespace IEEE.Migrations
                     b.ToTable("Users_Meetings");
                 });
 
-            modelBuilder.Entity("IEEE.Entities.Role", b =>
+            modelBuilder.Entity("CommitteeUser", b =>
                 {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole<int>");
+                    b.HasOne("IEEE.Entities.Committee", null)
+                        .WithMany()
+                        .HasForeignKey("CommitteesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("Role");
+                    b.HasOne("IEEE.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("IEEE.Entities.Committee", b =>
@@ -422,17 +476,6 @@ namespace IEEE.Migrations
                     b.Navigation("Committee");
 
                     b.Navigation("Head");
-                });
-
-            modelBuilder.Entity("IEEE.Entities.User", b =>
-                {
-                    b.HasOne("IEEE.Entities.Committee", "Committee")
-                        .WithMany("Users")
-                        .HasForeignKey("CommitteeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Committee");
                 });
 
             modelBuilder.Entity("IEEE.Entities.Users_Tasks", b =>
@@ -525,8 +568,6 @@ namespace IEEE.Migrations
                     b.Navigation("Meetings");
 
                     b.Navigation("Tasks");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("IEEE.Entities.Tasks", b =>
