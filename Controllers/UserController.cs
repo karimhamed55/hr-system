@@ -12,7 +12,7 @@ namespace IEEE.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "High Board,Head,Vice")]
+   // [Authorize(Roles = "High Board,Head,Vice")]
 
 
     public class UsersController : ControllerBase
