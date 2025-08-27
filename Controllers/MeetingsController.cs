@@ -63,9 +63,12 @@ namespace IEEE.Controllers
                 Recap = meeting.Recap,
                 DateTime = meeting.DateTime,
                 Type = meeting.Type,
-                CommitteeName = meeting.Committee != null ? meeting.Committee.Name : null,
-                HeadName = meeting.Head != null ? meeting.Head.UserName : null,
 
+                CommitteeId = meeting.CommitteeId,   
+                CommitteeName = meeting.Committee != null ? meeting.Committee.Name : null,
+
+                HeadId = meeting.HeadId,             
+                HeadName = meeting.Head != null ? meeting.Head.UserName : null,
             };
             return Ok(meetingDto);
 

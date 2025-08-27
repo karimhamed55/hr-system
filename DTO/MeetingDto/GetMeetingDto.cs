@@ -15,5 +15,10 @@ namespace IEEE.DTO.MeetingDto
         public string HeadName { get; set; }
 
 
+        public int? CommitteeId { get; set; }
+        public int? HeadId { get; set; }       
+
+
+
     }
 }
