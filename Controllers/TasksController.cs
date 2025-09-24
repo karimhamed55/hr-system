@@ -41,7 +41,7 @@ namespace IEEE.Controllers
             return Ok(newTask);
         }
 
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetTasks()
         {
@@ -59,7 +59,7 @@ namespace IEEE.Controllers
             return Ok(Tasks);
         }
 
-
+        [Authorize]
         [HttpGet("Id")]
         public async Task<IActionResult> GetTask(int Id)
         {
@@ -119,7 +119,7 @@ namespace IEEE.Controllers
             return Ok(Evaluations);
         }
 
-
+        [Authorize]
         [HttpGet("{Id}/evaluations")]
         public async Task<IActionResult> GetTaskEvaluations(int Id)
         {

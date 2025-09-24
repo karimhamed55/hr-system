@@ -23,6 +23,8 @@ namespace IEEE.Controllers
             _context = context;
         }
 
+
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetMeetingDto>>> GetMeetings()
         {
@@ -44,6 +46,8 @@ namespace IEEE.Controllers
             return Ok(meetings);
         }
 
+
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<GetMeetingDto>> GetMeeting(int id)
         {

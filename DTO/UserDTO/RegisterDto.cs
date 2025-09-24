@@ -35,6 +35,7 @@ namespace IEEE.DTO.UserDTO
         public string Phone { get; set; }
         public Goverment Goverment { get; set; }
         public int RoleId { get; set; }
+        public string? RoleName { get; set; }
 
 
 

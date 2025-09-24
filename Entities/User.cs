@@ -6,7 +6,6 @@ namespace IEEE.Entities
 {
     public class User : IdentityUser<int>
     {
-        public int Id { get; set; }
         public string FName { get; set; }
         public string MName { get; set; }
         public string LName { get; set; }
@@ -16,12 +15,14 @@ namespace IEEE.Entities
         public Goverment Goverment { get;set; }
         public Sex Sex { get; set; }
         public bool IsActive { get; set; } = false;
-        public int? CommitteeId { get; set; }
-        public int RoleId { get; set; }
-        public virtual ApplicationRole Role { get; set; }
+        public int? RoleId { get; set; }
+        // public virtual ApplicationRole Role { get; set; }
 
+        public int? CommitteeId { get; set; }  // FK للكوميتي الأساسي
 
         public Committee? ViceCommittee { get; set; }
+        public int? ViceCommitteeId { get; set; }      // FK
+
 
 
         public ICollection<Tasks>? HeadTasks { get; set; } = new List<Tasks>();

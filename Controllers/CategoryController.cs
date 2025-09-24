@@ -23,7 +23,6 @@ namespace IEEE.Controllers
         }
 
 
-
         // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetCategory>>> GetCategories()
@@ -39,7 +38,6 @@ namespace IEEE.Controllers
 
             return Ok(categories);
         }
-
 
 
         // GET: api/Categories/5

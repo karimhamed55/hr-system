@@ -23,12 +23,6 @@ namespace IEEE.Data
             modelBuilder.ApplyConfiguration(new Users_MeetingsCong());
 
 
-            modelBuilder.Entity<User>()
-           .HasOne(u => u.Role)
-           .WithMany(r => r.Users)
-           .HasForeignKey(u => u.RoleId)
-           .HasPrincipalKey(r => r.Id) 
-           .OnDelete(DeleteBehavior.Restrict);
 
 
 
@@ -51,12 +45,12 @@ namespace IEEE.Data
                 .Property(u => u.Faculty)
                 .HasConversion<string>();
 
-            // علاقة الـ Vices (واحد -> متعدد)
             modelBuilder.Entity<Committee>()
-                .HasMany(c => c.Vices)
-                .WithOne(u => u.ViceCommittee)
-                .HasForeignKey(u => u.CommitteeId)
-                .OnDelete(DeleteBehavior.Restrict);
+      .HasMany(c => c.Vices)
+      .WithOne(u => u.ViceCommittee)
+      .HasForeignKey(u => u.ViceCommitteeId)
+      .OnDelete(DeleteBehavior.Restrict); // أو Cascade حسب ما تحب
+
 
 
 
@@ -83,6 +77,10 @@ namespace IEEE.Data
                 .HasIndex(s => s.ArticleId);
 
 
+            modelBuilder.Entity<User>()
+    .HasMany(u => u.Committees)
+    .WithMany(c => c.Users)
+    .UsingEntity(j => j.ToTable("UserCommittees"));
 
 
         }

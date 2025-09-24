@@ -30,7 +30,7 @@ namespace IEEE.Controllers
         }
 
 
-      // [Authorize(Roles = "High Board,Head,Vice,Hr")]
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
 
         // GET: api/Users
         [HttpGet]
@@ -74,7 +74,7 @@ namespace IEEE.Controllers
         }
 
 
-
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -110,8 +110,7 @@ namespace IEEE.Controllers
         
         }
 
-        [Authorize(Roles = "High Board,Head,Vice,Hr")]
-
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // POST: api/Users/CreateUser
         [HttpPost]
         public async Task<IActionResult> CreateUser(createuserdto dto)
@@ -176,6 +175,7 @@ namespace IEEE.Controllers
 
 
 
+        [Authorize]
         // PUT: api/Users/EditUser/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> EditUser(int id, [FromBody] EditUserDto dto)

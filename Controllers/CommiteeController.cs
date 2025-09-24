@@ -29,6 +29,8 @@ namespace IEEE.Controllers
             _userManager = userManager;
         }
 
+
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommitteeGetDto>>> GetCommittees()
         {
@@ -44,7 +46,8 @@ namespace IEEE.Controllers
                 Id = c.Id,
                 Name = c.Name,
                 HeadId = c.HeadId ?? 0,
-                MemberCount = _context.Users.Count(u => u.CommitteeId == c.Id),
+                MemberCount = _context.Set<User>()
+                        .Count(u => u.Committees.Any(cm => cm.Id == c.Id)) ,
                 VicesId = c.Vices.Select(v => v.Id).ToList(),
                 ImageUrl = string.IsNullOrEmpty(c.ImageUrl) ? null : $"{baseUrl}{c.ImageUrl}", // 👈 رجع اللينك كامل
                 Description = c.Description
@@ -53,6 +56,8 @@ namespace IEEE.Controllers
             return Ok(committeesDto);
         }
 
+
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<CommitteeGetDto>> GetCommittee(int id)
         {
@@ -71,7 +76,8 @@ namespace IEEE.Controllers
                 Id = committee.Id,
                 Name = committee.Name,
                 HeadId = committee.HeadId ?? 0,
-                MemberCount = _context.Users.Count(u => u.CommitteeId == committee.Id),
+                MemberCount = _context.Set<User>()
+                        .Count(u => u.Committees.Any(cm => cm.Id == cm.Id)) ,
                 VicesId = committee.Vices.Select(v => v.Id).ToList(),
                 ImageUrl = string.IsNullOrEmpty(committee.ImageUrl) ? null : $"{baseUrl}{committee.ImageUrl}", // 👈 هنا كمان
                 Description = committee.Description
@@ -259,41 +265,44 @@ namespace IEEE.Controllers
         public async Task<IActionResult> DeleteCommittee(int id)
         {
             var committee = await _context.Committees
-                .Include(c => c.Users)
+                .Include(c => c.Users)    // many-to-many Users
+                .Include(c => c.Vices)    // many-to-many Vices
                 .Include(c => c.Meetings)
                     .ThenInclude(m => m.Users_Meetings)
-                .Include(c => c.Vices) // 👈 لو عندك علاقة Vices لازم تفكها كمان
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (committee == null)
                 return NotFound();
 
-            // فك ارتباط الـ Users
+            // فك ارتباط الـ Users من الـ committee
             foreach (var user in committee.Users.ToList())
             {
-                user.CommitteeId = null;
+                user.Committees.Remove(committee);
             }
 
-            // فك ارتباط الـ Vices (لو Many-to-Many)
-            committee.Vices.Clear();
+            // فك ارتباط الـ Vices
+            foreach (var vice in committee.Vices.ToList())
+            {
+                vice.Committees.Remove(committee);
+            }
 
-            // امسح UsersMeetings المرتبطة
+            // احذف Users_Meetings المرتبطة بكل اجتماع
             foreach (var meeting in committee.Meetings)
             {
                 _context.Users_Meetings.RemoveRange(meeting.Users_Meetings);
             }
 
-            // امسح الـ Meetings
+            // احذف الاجتماعات نفسها
             _context.Meetings.RemoveRange(committee.Meetings);
 
-            // امسح الـ Committee
+            // احذف اللجنة
             _context.Committees.Remove(committee);
 
-            // ✅ احفظ التغييرات
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
 
 
 

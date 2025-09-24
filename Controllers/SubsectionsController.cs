@@ -20,6 +20,9 @@ namespace IEEE.Controllers
             _context = context;
         }
 
+
+
+
         // GET: api/Subsections
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetSubsection>>> GetSubsections()

@@ -54,11 +54,11 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("HighBoardOnly", policy => policy.RequireRole("High Board"));
-    options.AddPolicy("HeadOnly", policy => policy.RequireRole("Head"));
-    options.AddPolicy("ViceOnly", policy => policy.RequireRole("Vice"));
-    options.AddPolicy("HrOnly", policy => policy.RequireRole("Hr"));
-    options.AddPolicy("MemberOnly", policy => policy.RequireRole("Member"));
+    options.AddPolicy("HighBoardOnly", policy => policy.RequireClaim("RoleId", "1"));
+    options.AddPolicy("HeadOnly", policy => policy.RequireClaim("RoleId", "2"));
+    options.AddPolicy("MemberOnly", policy => policy.RequireClaim("RoleId", "3"));
+    options.AddPolicy("HROnly", policy => policy.RequireClaim("RoleId", "4"));
+    options.AddPolicy("ViceOnly", policy => policy.RequireClaim("RoleId", "5")); 
 });
 
 builder.Services.AddControllers()
