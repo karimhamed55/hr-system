@@ -39,5 +39,8 @@ namespace IEEE.Entities
 
         public ICollection<Meeting> HeadMeetings { get; set; } = new List<Meeting>();
 
+        public List<RefreshToken> RefreshTokens { get; set; } = new();
+
+
     }
 }

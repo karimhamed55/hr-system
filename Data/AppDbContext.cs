@@ -94,5 +94,8 @@ namespace IEEE.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<Subsection> Subsections { get; set; }
+
+        public DbSet<Subsection> RefreshToken { get; set; }
+
     }
 }

@@ -30,7 +30,6 @@ namespace IEEE.Controllers
         }
 
 
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommitteeGetDto>>> GetCommittees()
         {

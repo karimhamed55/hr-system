@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace IEEE.Controllers
@@ -134,84 +135,134 @@ namespace IEEE.Controllers
             }
         }
 
+        private string GenerateJwtToken(User user, IList<string> userRoles)
+        {
+            List<Claim> UserClaim = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim("IsActive", user.IsActive.ToString()),
+        new Claim("RoleId", user.RoleId.ToString())
+    };
 
-
-        [HttpPost("Login")]
-                    public async Task<IActionResult> Login(LoginDto userFromRequest)
-                    {
-                        if (ModelState.IsValid)
-                        {
-                            User userfromdb = await userManager.FindByNameAsync(userFromRequest.Email);
-
-                            if (userfromdb != null)
-                            {
-                                bool found = await userManager.CheckPasswordAsync(userfromdb, userFromRequest.Password);
-                                if (found)
-                                {
-                                    // الحصول على Roles الخاصة بالمستخدم باستخدام UserManager
-                                    var userRoles = await userManager.GetRolesAsync(userfromdb);
-
-                                    List<Claim> UserClaim = new List<Claim>
-                {
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, userfromdb.Id.ToString()),
-                    new Claim(ClaimTypes.Name, userfromdb.Email),
-                    new Claim("IsActive", userfromdb.IsActive.ToString()),
-                    new Claim("RoleId", userfromdb.RoleId.ToString())
-                };
-
-                                    // إضافة جميع الـ Roles كـ Claims
-                                    foreach (var roleName in userRoles)
-                                    {
-                                        UserClaim.Add(new Claim(ClaimTypes.Role, roleName));
-                                    }
-
-                                    // الحصول على اسم الـ Role الأساسي
-                                    var primaryRoleName = userRoles.FirstOrDefault();
-
-                                    JwtSecurityToken mytoken = new JwtSecurityToken(
-                                        issuer: config["Jwt:IssuerIP"],
-                                        audience: config["Jwt:AudienceIP"],
-                                        expires: DateTime.Now.AddHours(1),
-                                        claims: UserClaim,
-                                        signingCredentials: new SigningCredentials(
-                                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KiraSuperUltraMegaSecretKey!1234567890")),
-                                            SecurityAlgorithms.HmacSha256
-                                        )
-                                    );
-
-                                    var tokenString = new JwtSecurityTokenHandler().WriteToken(mytoken);
-
-                                    return Ok(new
-                                    {
-                                        token = tokenString,
-                                        user = new
-                                        {
-                                            id = userfromdb.Id,
-                                            firstName = userfromdb.FName,
-                                            middleName = userfromdb.MName,
-                                            lastName = userfromdb.LName,
-                                            email = userfromdb.Email,
-                                            phone = userfromdb.PhoneNumber,
-                                            sex = userfromdb.Sex,
-                                            goverment = userfromdb.Goverment,
-                                            year = userfromdb.Year,
-                                            faculty = userfromdb.Faculty,
-                                            roleId = userfromdb.RoleId,
-                                            roleName = primaryRoleName,
-                                            roles = userRoles // إضافة جميع الـ Roles
-                                        }
-                                    });
-                                }
-                            }
-
-                            ModelState.AddModelError("Username", "Username OR Password Invalid");
-                            return Unauthorized(ModelState);
-                        }
-
-                        return BadRequest(ModelState);
-                    }
-
-                }
+            foreach (var roleName in userRoles)
+            {
+                UserClaim.Add(new Claim(ClaimTypes.Role, roleName));
             }
+
+            var token = new JwtSecurityToken(
+                issuer: config["Jwt:IssuerIP"],
+                audience: config["Jwt:AudienceIP"],
+                expires: DateTime.UtcNow.AddMinutes(180),
+                claims: UserClaim,
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KiraSuperUltraMegaSecretKey!1234567890")),
+                    SecurityAlgorithms.HmacSha256
+                )
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+
+
+        [HttpPost("login")]
+
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await userManager.FindByNameAsync(dto.Email);
+            if (user == null || !await userManager.CheckPasswordAsync(user, dto.Password))
+                return Unauthorized("Username or password invalid");
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            // Access Token
+            var accessToken = GenerateJwtToken(user, roles);
+
+            // Refresh Token
+            var refreshToken = GenerateRefreshToken(HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+            user.RefreshTokens.Add(refreshToken);
+            await userManager.UpdateAsync(user);
+
+            return Ok(new
+            {
+                accessToken,
+                refreshToken = refreshToken.Token,
+                user = new
+                {
+                    id = user.Id,
+                    firstName = user.FName,
+                    middleName = user.MName,
+                    lastName = user.LName,
+                    email = user.Email,
+                    phone = user.PhoneNumber,
+                    sex = user.Sex,
+                    goverment = user.Goverment,
+                    year = user.Year,
+                    faculty = user.Faculty,
+                    roleId = user.RoleId,
+                    roleName = roles.FirstOrDefault(),
+                    roles
+                }
+            });
+        }
+
+        private RefreshToken GenerateRefreshToken(string ipAddress)
+        {
+            var randomBytes = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomBytes),
+                Expires = DateTime.UtcNow.AddDays(7), // مدة صلاحية الـ Refresh Token
+                Created = DateTime.UtcNow,
+                CreatedByIp = ipAddress
+            };
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] string token)
+        {
+            var user = await _context.Users
+                .Include(u => u.RefreshTokens)
+                .SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+                return Unauthorized();
+
+            var oldToken = user.RefreshTokens.Single(x => x.Token == token);
+
+            if (!oldToken.IsActive)
+                return Unauthorized("Invalid refresh token");
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            // Access Token جديد
+            var newJwt = GenerateJwtToken(user, roles);
+            var newRefreshToken = GenerateRefreshToken(HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+
+            // إلغاء القديم وربطه بالجديد
+            oldToken.Revoked = DateTime.UtcNow;
+            oldToken.RevokedByIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+            oldToken.ReplacedByToken = newRefreshToken.Token;
+
+            user.RefreshTokens.Add(newRefreshToken);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                accessToken = newJwt,
+                refreshToken = newRefreshToken.Token
+            });
+        }
+    }
+}
+    
             
