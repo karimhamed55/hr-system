@@ -79,9 +79,9 @@ namespace IEEE.Data
 
 
             modelBuilder.Entity<User>()
-    .HasMany(u => u.Committees)
-    .WithMany(c => c.Users)
-    .UsingEntity(j => j.ToTable("UserCommittees"));
+                .HasMany(u => u.Committees)
+                .WithMany(c => c.Users)
+                .UsingEntity(j => j.ToTable("UserCommittees"));
 
 
         }
@@ -96,7 +96,7 @@ namespace IEEE.Data
         public DbSet<Article> Articles { get; set; }
         public DbSet<Subsection> Subsections { get; set; }
 
-        public DbSet<Subsection> RefreshToken { get; set; }
+        public DbSet<RefreshToken> RefreshToken { get; set; }
 
         public DbSet<Event> Events { get; set; }
         public DbSet<EventCategory> EventCategories { get; set; }
