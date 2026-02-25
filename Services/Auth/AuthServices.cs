@@ -1,15 +1,13 @@
 using IEEE.DTO.EmailDto.EmailAuth;
-using IEEEApplication.Auth;
-using IEEEApplication.Emails;
 using IEEEApplication.Results;
 using IEEE.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using IEEE.DTO.EmailDto;
+using IEEE.Services.Emails;
 
 namespace IEEE.Services.Auth
 {

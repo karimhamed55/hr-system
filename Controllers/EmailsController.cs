@@ -1,5 +1,5 @@
 using IEEE.DTO.EmailDto;
-using IEEEApplication.Emails;
+using IEEE.Services.Emails;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
